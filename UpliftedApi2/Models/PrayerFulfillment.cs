@@ -17,10 +17,16 @@ namespace UpliftedApi2.Models
         public DateTime createdAt { get; set; } = DateTime.UtcNow;
 
         [Required]
+        public int createdBy { get; set; }
+
+        [Required]
         [MaxLength(1000)]
         public string bodyText { get; set; }
 
         [ForeignKey(nameof(prayerRequestId))]
-        public PrayerRequest myPrayerReqest { get; set; }
+        public PrayerRequest myPrayerRequest { get; set; }
+
+        [ForeignKey (nameof(createdBy))]
+        public User myCreatedBy { get; set; }
     }
 }

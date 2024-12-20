@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 using UpliftedApi2.Models;
 
 namespace UpliftedApi2.Services
@@ -17,6 +18,34 @@ namespace UpliftedApi2.Services
         {
             return await _context.PrayerRequests
                 .Where(pr => pr.groupId == groupId)
+                .ToListAsync();
+        }
+
+        internal async Task<List<PrayerFulfillment>> GetPrayerFulfillmentsByGroupAsync(int groupid)
+        {
+            return await _context.PrayerFulfillments
+                .Where(pf => pf.myPrayerRequest.groupId == groupid)
+                .ToListAsync();
+        }
+
+        internal async Task<List<PrayerFulfillment>> GetPrayerFulfillmentByUserAsync(int userid)
+        {
+            return await _context.PrayerFulfillments
+                .Where(pf => pf.myPrayerRequest.userId == userid)
+                .ToListAsync();
+        }
+
+        internal async Task<List<PrayerFulfillment>> GetPrayerFulfillmentByPrayerRequestAsync(int prayerrequestid)
+        {
+            return await _context.PrayerFulfillments
+                .Where(pf => pf.myPrayerRequest.Id == prayerrequestid)
+                .ToListAsync();
+        }
+
+        internal async Task<List<PrayerFulfillment>> GetPrayerFulfillmentByCreatedByUserAsync(int createdbyuserid)
+        {
+            return await _context.PrayerFulfillments
+                .Where(cbu => cbu.myCreatedBy.Id == createdbyuserid)
                 .ToListAsync();
         }
     }

@@ -72,10 +72,16 @@ namespace UpliftedApi2.Models
             {
                 entity.HasKey(e => e.Id); // Define the primary key
 
-                // Foreign key to User
-                entity.HasOne(pr => pr.myPrayerReqest)
+                // Foreign key to prayre request
+                entity.HasOne(pr => pr.myPrayerRequest)
                       .WithMany()
                       .HasForeignKey(pr => pr.prayerRequestId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                // Foreign key to created by user
+                entity.HasOne(cbu => cbu.myCreatedBy)
+                      .WithMany()
+                      .HasForeignKey(cbu => cbu.createdBy)
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
