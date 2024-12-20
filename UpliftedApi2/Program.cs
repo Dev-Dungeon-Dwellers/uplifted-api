@@ -1,5 +1,6 @@
 using UpliftedApi2.Models;
 using Microsoft.EntityFrameworkCore;
+using UpliftedApi2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<GlobalService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<UpliftedApiContext>(options => options.UseSqlServer(connectionString));

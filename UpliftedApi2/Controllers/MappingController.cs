@@ -7,5 +7,10 @@ namespace UpliftedApi2.Controllers
     [ApiController]
     public class MappingController : ControllerBase
     {
+        //GET: api/UserGroupMapping
+        //GET: api/UserGroupMapping/1
+        //PUT: api/UserGroupMapping
+        //PUT: api/AssignRole
+        //PUT: api/UnAssignRole
     }
 }
