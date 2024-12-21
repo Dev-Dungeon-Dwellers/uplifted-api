@@ -15,12 +15,18 @@ namespace UpliftedApi2.Controllers
             _context = context;
         }
 
+
+        /// <summary>
+        /// Gets all groups from database
+        /// </summary>
+        /// <returns></returns>
         // Get api/Group
         [HttpGet]
         public ActionResult<IEnumerable<Group>> GetGroups()
         {
             return _context.Groups.ToList();
         }
+
 
         // GET: api.Group/1
         [HttpGet("{id}")]
