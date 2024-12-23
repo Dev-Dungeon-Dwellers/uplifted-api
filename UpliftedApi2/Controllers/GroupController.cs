@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UpliftedApi2.Models;
@@ -22,6 +23,7 @@ namespace UpliftedApi2.Controllers
         /// <returns></returns>
         // Get api/Group
         [HttpGet]
+        [Authorize("read:messages")]
         public ActionResult<IEnumerable<Group>> GetGroups()
         {
             return _context.Groups.ToList();
