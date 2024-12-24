@@ -18,14 +18,28 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     options.Audience = builder.Configuration["Auth0:Audience"];
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        NameClaimType = ClaimTypes.NameIdentifier
+        NameClaimType = ClaimTypes.NameIdentifier,
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
     };
 });
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("read:messages", policy => policy.Requirements.Add(new
-    HasScopeRequirement("read:messages", domain)));
+    options.AddPolicy("ReadGroups", policy =>
+        policy.RequireClaim("permissions", "read:groups"));
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", builder =>
+    {
+        builder.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
 });
 
 builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
@@ -76,13 +90,16 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseStaticFiles();
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-        c.RoutePrefix = string.Empty; // To access Swagger at http://localhost:5090
+        c.RoutePrefix = string.Empty;  // This makes Swagger available at the root (http://localhost:5050/)
     });
 }
+
+app.UseCors("AllowAllOrigins");
 
 app.UseAuthentication();
 app.UseAuthorization();
