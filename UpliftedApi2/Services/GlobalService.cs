@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text.RegularExpressions;
 using UpliftedApi2.Models;
 
@@ -46,6 +47,13 @@ namespace UpliftedApi2.Services
         {
             return await _context.PrayerFulfillments
                 .Where(cbu => cbu.myCreatedBy.Id == createdbyuserid)
+                .ToListAsync();
+        }
+
+        internal async Task<List<UserGroupMapping>> GetUserGroupMappingsByIdAsync(int usergroupmappingid)
+        {
+            return await _context.UserGroupMappings
+                .Where(ugm => ugm.id == usergroupmappingid)
                 .ToListAsync();
         }
     }
