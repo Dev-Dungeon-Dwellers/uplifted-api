@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UpliftedApi2.Models;
+using UpliftedApi2.Models.DTOs;
 
 namespace UpliftedApi2.Controllers
 {
@@ -22,35 +23,54 @@ namespace UpliftedApi2.Controllers
         /// <returns></returns>
         // Get api/Group
         [HttpGet]
-        public ActionResult<IEnumerable<Group>> GetGroups()
+        public async Task<ActionResult<IEnumerable<Group>>> GetGroups()
         {
-            return _context.Groups.ToList();
+            var groups = await _context.Groups.ToListAsync();
+
+            if(groups.Count == 0)
+            {
+                return NotFound("No groups were found");
+            }
+
+            return Ok(groups);
         }
 
 
         // GET: api.Group/1
         [HttpGet("{id}")]
-        public ActionResult<Group> GetGroup(int id)
+        public async Task<ActionResult<Group>> GetGroup(int id)
         {
-            var group = _context.Groups.Find(id);
+            var group = await _context.Groups.FindAsync(id);
+
             if(group == null)
             {
-                return NotFound();
+                return NotFound($"No group with the ID {id} was found.");
             }
-            return group;
+
+            return Ok(group);
         }
 
         //POST: api/Group
         [HttpPost]
-        public ActionResult<Group> CreateGroup(Group group)
+        public async Task<ActionResult<Group>> CreateGroup(CreateGroupDto groupDto)
         {
-            if(group == null)
+            if(groupDto == null)
             {
-                return BadRequest();
+                return BadRequest("Group data is required");
             }
+
+            //DTO mapping
+            var group = new Group
+            {
+                Name = groupDto.name,
+                Description = groupDto.description
+            };
+
+            //add to db
             _context.Groups.Add(group);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetGroup), new { id = group.Id }, group);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetGroup), new {id = group.Id}, group);
         }
 
     }
