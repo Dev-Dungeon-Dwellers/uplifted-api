@@ -56,7 +56,7 @@ namespace UpliftedApi2.Controllers
         {
             if(groupDto == null)
             {
-                return BadRequest("Group data is required");
+                return BadRequest("Group data is required.");
             }
 
             //DTO mapping
