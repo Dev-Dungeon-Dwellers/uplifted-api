@@ -23,7 +23,6 @@ namespace UpliftedApi2.Controllers
         /// <returns></returns>
         // Get api/Group
         [HttpGet]
-        [Authorize(Policy = "ReadGroups")]
         public ActionResult<IEnumerable<Group>> GetGroups()
         {
             return _context.Groups.ToList();
