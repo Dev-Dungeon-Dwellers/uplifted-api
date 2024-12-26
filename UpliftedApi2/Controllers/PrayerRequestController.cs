@@ -127,5 +127,46 @@ namespace UpliftedApi2.Controllers
 
             return CreatedAtAction(nameof(GetPrayerRequestById), new { id = prayerRequest.Id }, prayerRequest);
         }
+
+        //DELETE prayer request
+        [HttpDelete]
+        public async Task<IActionResult> DeletePrayerRequest([FromQuery] int prayerRequestId)
+        {
+            //validate id input
+            if(prayerRequestId <= 0)
+            {
+                return BadRequest("Invalid prayer request ID. Must be a positive integer");
+            }
+
+            //check if prayer request exists
+            var prayerRequest = await _context.PrayerRequests.FirstOrDefaultAsync(pr => pr.Id == prayerRequestId);
+            if(prayerRequest == null)
+            {
+                return NotFound($"Prayer request with ID {prayerRequestId} not found.");
+            }
+
+            //check if there are any prayer fulfillments
+            var prayerFulfillments = await _context.PrayerFulfillments.Where(pf => pf.prayerRequestId == prayerRequestId).ToListAsync();
+            
+            if(prayerFulfillments.Any())
+            {
+                //delete any prayer fulfillments
+                _context.PrayerFulfillments.RemoveRange(prayerFulfillments);
+            }
+
+            //delete prayer request
+            _context.PrayerRequests.Remove(prayerRequest);
+
+            //sanity check
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok($"Prayer request with the ID {prayerRequestId} deleted successfully");
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"An error occured while deleting the prayer request: {ex.Message}");
+            }
+        }
     }
 }
