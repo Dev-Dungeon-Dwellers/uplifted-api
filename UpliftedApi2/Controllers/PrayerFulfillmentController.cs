@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 using UpliftedApi2.Models;
 using UpliftedApi2.Models.DTOs;
 using UpliftedApi2.Services;
@@ -175,6 +176,38 @@ namespace UpliftedApi2.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetPrayerFulfillmentById), new { id = prayerFulfillment.Id }, prayerFulfillment);
+        }
+
+        //DELETE
+
+        [HttpDelete]
+        public async Task<IActionResult> DeletePrayerFulfillment([FromQuery] int prayerFulfillmentId)
+        {
+            //validate prayerFulfillmentID
+            if(prayerFulfillmentId <= 0)
+            {
+                return BadRequest($"Invalid groupId. Must be a positive integer.");
+            }
+
+            //validate prayer fulfillment exists
+            var prayerFulfillment = await _context.PrayerFulfillments.FirstOrDefaultAsync(pf => pf.Id == prayerFulfillmentId);
+            if (prayerFulfillment == null)
+            {
+                return NotFound($"Prayer fulfillment with the id {prayerFulfillmentId} not found.");
+            }
+
+            //delete prayer fulfillment
+            _context.PrayerFulfillments.Remove(prayerFulfillment);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok($"Prayer fulfillment with ID {prayerFulfillmentId} deleted successfully.");
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"An error occured while deleting the prayer fulfillment: {ex.Message}");
+            }
         }
     }
 }

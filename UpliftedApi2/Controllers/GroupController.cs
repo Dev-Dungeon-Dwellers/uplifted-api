@@ -74,5 +74,36 @@ namespace UpliftedApi2.Controllers
             return CreatedAtAction(nameof(GetGroup), new {id = group.Id}, group);
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> DeleteGroup([FromQuery] int groupId)
+        {
+            if (groupId <= 0)
+            {
+                return BadRequest($"Invalid groupId. Must be a positive integer.");
+            }
+
+            var group = await _context.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
+            if (group == null)
+            {
+                return NotFound($"Group with ID {groupId} not found.");
+            }
+
+            var userGroupMappings = await _context.UserGroupMappings.Where(m => m.groupId == groupId).ToListAsync();
+            _context.UserGroupMappings.RemoveRange(userGroupMappings);
+
+            _context.Groups.Remove(group);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok($"Group with ID {groupId} deleted successfully.");
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"An error occurred while deleting the group: {ex.Message}");
+            }
+        }
+
     }
 }
+
